@@ -1,0 +1,8 @@
+$ git init
+$ git remote add origin <repository-link.git>
+$ git checkout -b <name-branch>
+$ git pull origin <name-branch> //gets the difference
+$ git add .
+$ git commit -m "First commit"
+$ git push -u origin <name-branch> //only the first
+$ git log --oneline //displays all commit history

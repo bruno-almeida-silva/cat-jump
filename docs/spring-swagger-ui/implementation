@@ -1,0 +1,31 @@
+//POM.xml
+
+<dependency>
+	<groupId>io.springfox</groupId>
+	<artifactId>springfox-boot-starter</artifactId>
+	<version>3.0.0</version>
+</dependency>
+<dependency>
+	<groupId>io.springfox</groupId>
+	<artifactId>springfox-swagger-ui</artifactId>
+	<version>3.0.0</version>
+</dependency>
+    
+    
+//Configuration class
+
+@Configuration
+public class SpringFoxConfig {
+
+	@Bean
+	public Docket swagger() {
+		return new Docket(DocumentationType.SWAGGER_2)
+				.select()
+				.apis(RequestHandlerSelectors.any())
+				.paths(PathSelectors.any())
+				.build();
+	}
+}
+
+//Run in the browser
+http://localhost:8080/swagger-ui/index.html

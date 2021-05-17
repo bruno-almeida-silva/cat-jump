@@ -1,0 +1,66 @@
+//SELF-RELATIONSHIP
+
+//Conceptual model
+_________________
+|     User	| -followers
+|---------------| _______________
+| -id: Long	|*		| 
+| -name: String	|		|
+|---------------|		|
+|_______________|	     	|
+	  |*			|
+	  |_____________________|
+	  -following
+	  
+@Entity
+public class User {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	private String name;
+    
+    @ManyToMany
+    @JoinTable(name = "tb_follows",
+	    joinColumns = @JoinColumn(name = "user_id"),
+	    inverseJoinColumns = @JoinColumn(name = "followed_id"))	
+   	Set<User> following = new HashSet<>();
+
+    @ManyToMany(mappedBy = "following")
+    Set<User> followers = new HashSet<>();
+    
+    //contructors
+    //getters and setters
+}
+
+//Hard code data
+@SpringBootApplication
+public class DemoApplication implements CommandLineRunner {
+
+	@Autowired
+	private UserRepository userRepository;
+	
+	public static void main(String[] args) {
+		SpringApplication.run(AularrApplication.class, args);
+	}
+
+	@Override
+	public void run(String... args) throws Exception {
+		
+		User u1 = new User(null, "Mary");
+		User u2 = new User(null, "John");
+		User u3 = new User(null, "Bob");
+		User u4 = new User(null, "Sandy");
+		User u5 = new User(null, "Peter");
+		
+		userRepository.saveAll(Arrays.asList(u1, u2, u3, u4, u5));
+		
+		u1.getFollowing.saveAll(Arrays.asList(u2, u5));
+		u2.getFollowing.saveAll(Arrays.asList(u1, u3));
+		u3.getFollowing.saveAll(Arrays.asList(u4, u2));
+		u4.getFollowing.saveAll(Arrays.asList(u3, u5));
+		u5.getFollowing.saveAll(Arrays.asList(u1, u2));
+		
+		userRepository.saveAll(Arrays.asList(u1, u2, u3, u4, u5));
+	}
+}

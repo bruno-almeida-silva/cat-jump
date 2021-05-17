@@ -1,0 +1,41 @@
+//POM.xml
+
+<dependency>
+	<groupId>org.spring.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-hateoas</artifactId>
+</dependency>
+
+
+//Entity
+
+public class Product extends RepresentationModel<Product> implements Serializable {
+	...
+}
+
+
+//Controller
+
+@GetMapping("/products")
+public ResponseEntity<List<Product>> findAllProducts() {
+	List<Product> products = productRepository.findAll();
+	if(products.isEmpty()) {
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	} else {
+		for(Product p: products) {
+			long id = p.getId();
+			p.add(linkTo(methodOn(ProductController.class).findProductById(id)).withSelfRel()); //unique link to each feature
+		}
+		return new ResponseEntity<List<Product>>(products, HttpStatus.OK);		
+	}
+}
+
+@GetMapping("/products/{id}")
+public ResponseEntity<Product> findProductById(@PathVariable Long id) {
+	Optional<Product> product = productRepository.findById(id);
+	if(product.isEmpty()) {
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	} else {
+		product.get().add(linkTo(methodOn(ProductController.class).findAllProducts()).withRel("list of products")); //link for all products
+		return new ResponseEntity<Product>(product.get(), HttpStatus.OK);
+	}
+}

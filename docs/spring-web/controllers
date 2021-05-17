@@ -1,0 +1,39 @@
+@RestController
+@RequestMapping("products")
+@AllArgsConstructor(onConstructor = @__(@Autowired))
+//@RequiredArgsConstructor //Generates and instantiates the constructor
+public class ProductControllers {
+	
+	private ProductService service;
+	//private final ProductService service;
+
+	@GetMapping
+	public ResponseEntity<Page<ProductDTO>> findAll(
+			@SortDefault.SortDefaults({@SortDefault(sort = "name", direction = Sort.Direction.ASC)})
+			@PageableDefault(size = 10) Pageable pageable) {		
+		return ResponseEntity.ok(service.findAll(pageable));
+	}
+  
+  @GetMapping("/{id}")
+	public ProductDTO findById(@PathVariable Long id) throws ProductNotFoundException {		
+		return service.findById(id);		
+	}
+  
+  @PostMapping
+	public ResponseEntity<ProductDTO> insert (@Valid @RequestBody ProductDTO dto) {
+		ProductDTO saved = service.create(new Product(null, dto.getName(), dto.getPrice()));
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("{id}").buildAndExpand(saved.getId()).toUri();
+		return ResponseEntity.created(uri).body(saved);
+	}
+  
+  @PutMapping("/{id}")
+	public ResponseEntity<ProductDTO> replace(@PathVariable Long id, @Valid @RequestBody ProductDTO dto) throws ProductNotFoundException {
+		return ResponseEntity.ok(service.replace(id, dto));
+	}
+  
+  @DeleteMapping("/{id}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void delete(Long id) throws ProductNotFoundException {
+		service.delete(id);
+	}
+}

@@ -1,0 +1,38 @@
+//Repository
+public interface ProductRepository extends PagingAndSortingRepository<Product, Long>, JpaSpecificationExecutor<Product> {
+}
+
+//Class for filtering
+public class ProductFilter {
+    private String name;
+    private Double price;
+	
+    //constructors
+    //getters and setters
+    
+    //Implementation
+    public Specification<Product> toSpec() {
+        return (root, query, builder) -> {
+		        List<Predicate> predicates = new ArrayList<>();
+		        if(StringUtils.hasText(name)) {
+			          Path<String> strName = root.<String>get("name");
+			          Predicate preName = builder.like(strName, "%"+name+"%");
+			          predicates.add(preName);
+		        }
+            if(price != null) {
+                Path<Double> douPrice = root.<Double>get("price");
+                Predicate prePrice = builder.equal(douPrice, price);
+                predicates.add(prePrice);
+            }
+		    return builder.and(predicates.toArray(new Predicate[0]));
+    };
+}
+
+//Endpoint
+@GetMapping("/filter")
+public ResponseEntity<Page<Product>> research(ProductFilter productFilter, Pageable pageable) {
+    return ResponseEntity.ok(productFilter.toSpec(), pageable);
+}
+
+//Execution
+curl http://localhost:8080/filter?name=tablet,price=2000.0&page=0&size=10

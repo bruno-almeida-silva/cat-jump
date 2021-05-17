@@ -1,0 +1,16 @@
+server:
+    port:   8761
+    
+    servlet:
+        context-path: /api/v1/
+
+spring:
+
+    application:
+        name:   eureka-server
+    
+    profiles:
+        active: test
+    
+    jpa:
+        open-in-view:   false

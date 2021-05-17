@@ -1,0 +1,65 @@
+//POM.xml
+
+<properties>
+    ...
+    <jasperreports.version>6.16.0</jasperreports.version>
+	<jasperreports-fonts.version>6.16.0</jasperreports-fonts.version>
+	<jasperreports-functions.version>6.16.0</jasperreports-functions.version>
+</properties>
+
+<!-- JasperReports -->
+<dependency>
+    <groupId>net.sf.jasperreports</groupId>
+	<artifactId>jasperreports</artifactId>
+	<version>${jasperreports.version}</version>
+</dependency>
+<dependency>
+	<groupId>net.sf.jasperreports</groupId>
+	<artifactId>jasperreports-fonts</artifactId>
+	<version>${jasperreports-fonts.version}</version>
+</dependency>
+<dependency>
+	<groupId>net.sf.jasperreports</groupId>
+	<artifactId>jasperreports-functions</artifactId>
+	<version>${jasperreports-functions.version}</version>
+</dependency>
+
+//Path files .jasper (reports)
+src/main/resources/reports
+
+
+@Service
+@RequiredArgsConstructor
+public class ProductService {
+    
+    private final ProductRepository repository;
+
+    public class generateReporting() throws JRException {
+
+        List<Product> list = repository.findAll();
+    
+        Map<String, Object> params = new HashMap<>();
+        params.put("PARAM", param);
+        params.put("REPORT_LOCALE", new Locale("pt", "BR"));
+
+        InputStream inputStream = this.getClass().getResourceAsStream("/reports/report.jasper");
+        JasperPrint jasperPrint = JasperFillManager.fillReport(inputStream, params, new JRBeanCollectionDataSource(list));
+        
+        return JasperExportManager.exportReportToPdf(jasperPrint);
+    }
+}
+
+
+@RestController
+@RequestMapping("products")
+@RequiredArgsConstructor
+public class ProductController {
+
+    private final ProductService service;
+    
+    @GetMapping("/report")
+    public ResponseEntity<byte[]> report() throws JRException {
+        byte[] report = service.generateReporting();
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE).body(report);
+    }
+}

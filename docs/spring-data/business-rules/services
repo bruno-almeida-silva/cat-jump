@@ -1,0 +1,51 @@
+@Service
+@AllArgsConstructor(onConstructor = @__(@Autowired))
+//@RequiredArgsConstructor //Generates and instantiates the constructor
+public class ProductService {
+
+    private ProductRepository repository;
+    //private final ProductRepository repository;
+
+    //List sorted by name that returns a DTO
+    @Transactional(readOnly = true)
+    public List<ProductDTO> findAll() {
+        return repository.findAll(Sort.by("name").ascending()).stream().map(x -> new ProductDTO(x)).collect(Collectors.toList());
+    }
+    
+    //Page sorted by name that returns a DTO
+    @Transactional(readOnly = true)
+    public Page<ProductDTO> findAll(Pageable pageable) {
+      return repository.findAll(pageable).map(s -> new ProductDTO(s));
+      					//.sorted((x, y) -> x.getPrice().compareTo(y.getPrice()))
+    }
+    
+    @Transactional(readOnly = true)
+    public ProductDTO findById(Long id) throws ProductNotFoundException {
+      Product product = verifyIfExists(id);
+      return new ProductDTO(product);
+    }
+    
+    @Transactional
+    public ProductDTO create(Product productDTO) {
+      Product product = repository.save(productDTO);
+      return new StudentDTO(product);
+    }
+    
+    @Transactional
+    public ProductDTO replace(Long id, @Valid ProductDTO dto) throws ProductNotFoundException {
+      Product product = verifyIfExists(id);
+      BeanUtils.copyProperties(dto, product, "id");
+      return new ProductDTO(repository.save(product));
+    }
+    
+    @Transactional
+    public void delete(Long id) throws ProductNotFoundException {
+      Product product = verifyIfExists(id);
+      repository.delete(product);
+    }
+  
+    private Product verifyIfExists(Long id) throws ProductNotFoundException {
+		return repository.findById(id)
+				.orElseThrow(() -> new ProductNotFoundException(id));
+	}
+}

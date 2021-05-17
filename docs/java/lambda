@@ -1,0 +1,7 @@
+//Filter products manufactured in the current month, sorted by descending name
+var products = productRepository.findAll(Sort.by(Sort.Direction.DESC, "name"))
+                                .stream()
+                                .filter(p -> p.getManufacturing().isAfter(LocalDate.now().withMonth(LocalDate.now().getMonth().getValue()).with(TemporalAdjusters.firstDayOfMonth()))
+                                          && l.getManufacturing().isBefore(LocalDate.now().withMonth(LocalDate.now().getMonth().getValue()).with(TemporalAdjusters.lastDayOfMonth()))
+                                        )
+                                .collect(Collectors.toList());

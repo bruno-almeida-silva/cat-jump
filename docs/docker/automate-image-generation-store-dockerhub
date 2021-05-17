@@ -1,0 +1,38 @@
+//Automate image generation and store in the docker registry
+
+//Dockerfile
+
+FROM openjdk:11-jre
+EXPOSE 8080
+ADD target/APP_NAME.jar APP_NAME.jar
+ENTRYPOINT ["java", "-jar", "APP_NAME.jar"]
+
+//POM.xml
+
+<plugin>
+	<groupId>com.spotify</groupId>
+		<artifactId>dockerfile-maven-plugin</artifactId>
+			<version>1.4.12</version>
+				<configuration>
+					<repository>DOCKER_USER/${project.artifactId}</repository>
+					<tag>${project.version}</tag>
+					<buildArgs>
+						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+					</buildArgs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>default</id>
+						<phase>install</phase>
+						<goals>
+							<goal>build</goal>
+							<goal>push</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<finalName>APP_NAME</finalName>
+    
+$ docker login 
+$ mvn install

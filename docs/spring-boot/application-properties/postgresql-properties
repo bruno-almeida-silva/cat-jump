@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgresdb
+    username: postgres
+    password: postgres
+  jpa:
+    properties:
+#      javax:
+#        persistence:
+#          schema-generation:
+#            create-source:  metadata
+#          scripts:
+#            action: create
+#            create-target:  create.sql
+        hibernate:
+          jdbc:
+            lob:
+              non_contextual_creation: true
+#          hbm2ddl:
+#            delimiter:  ;
+
+        ddl-auto: none
+
+#Properties that generate script with table creation commands in the database

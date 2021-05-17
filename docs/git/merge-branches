@@ -1,0 +1,19 @@
+//Create new branch
+git checkout -b <name-new-branch>
+
+//Perform operations for confirmation
+git status
+git add .
+git commit -m "Fist commit in new branch"
+
+//Send commit for new branch
+git push -u origin <name-new-branch>
+
+//Go to the destination branch
+git checkout <target-branch>
+
+//Operation merge
+git merge <name-new-branch>
+git add .
+git commit -m "Fusion with <name-new-branch>"
+git push origin <target-branch>
